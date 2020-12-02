@@ -1,6 +1,5 @@
 import { Controller, Get, Param, HttpException, HttpStatus, HttpCode} from '@nestjs/common';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
-import { throwError } from 'rxjs';
 
 const validateUUID = require('uuid-validate');
 const R = require('ramda');
@@ -26,6 +25,7 @@ export class UserController {
   @Get('/:uid')
   @ApiParam({
     name: "uid",
+    description: "uuid of the user",
     type: String,
     required: true
   })
