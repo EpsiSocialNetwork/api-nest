@@ -1,4 +1,5 @@
 import { Controller, Get, Param, HttpException, HttpStatus, HttpCode} from '@nestjs/common';
+import { Resource, Roles, Scopes, AllowAnyRole, Unprotected, Public } from 'nest-keycloak-connect';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 
 const validateUUID = require('uuid-validate');
@@ -23,6 +24,7 @@ export class UserController {
   }
 
   @Get('/:uid')
+  @Roles('myclient:USER')
   @ApiParam({
     name: "uid",
     description: "uuid of the user",
