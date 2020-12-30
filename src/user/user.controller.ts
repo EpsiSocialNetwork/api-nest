@@ -1,4 +1,5 @@
 import { Controller, Get, Param, HttpException, HttpStatus, HttpCode} from '@nestjs/common';
+import { Resource, Roles, Scopes, AllowAnyRole, Unprotected, Public } from 'nest-keycloak-connect';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 
 const validateUUID = require('uuid-validate');
@@ -18,11 +19,13 @@ export class UserController {
   constructor(private readonly userService: UserService, private readonly postService: PostService) {}
 
   @Get()
+  @Roles('myclient:USER')
   findAll(): Promise<User[]> {
       return this.userService.findAll();
   }
 
   @Get('/:uid')
+  @Roles('myclient:USER')
   @ApiParam({
     name: "uid",
     description: "uuid of the user",
@@ -39,12 +42,13 @@ export class UserController {
   }
 
   @Get('/:uid/post')
+  @Roles('myclient:USER')
   @ApiParam({
     name: "uid",
     type: String,
     required: true
   })
-  findAllPostByUserUid(@Param('uid') uid, @Param('uid') uidPost): Promise<Post[]> {
+  findAllPostByUserUid(@Param('uid') uid): Promise<Post[]> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.postService.findAllPostByUserUid(uid),
