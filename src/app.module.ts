@@ -1,9 +1,9 @@
-import { KeycloakModule } from './auth/keycloak.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 // Modules
+import { KeycloakModule } from './auth/keycloak.module';
 import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
