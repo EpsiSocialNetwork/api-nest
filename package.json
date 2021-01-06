@@ -24,6 +24,7 @@
   "dependencies": {
     "@exlinc/keycloak-passport": "^1.0.2",
     "@nestjs/common": "^7.5.1",
+    "@nestjs/config": "^0.6.1",
     "@nestjs/core": "^7.5.1",
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/passport": "^7.1.5",
@@ -32,6 +33,7 @@
     "@nestjs/typeorm": "^7.1.5",
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
+    "config": "^3.3.3",
     "keycloak-nestjs": "^1.0.5",
     "nest-keycloak-connect": "1.4.0",
     "nestjs-keycloak-admin": "^1.4.6",

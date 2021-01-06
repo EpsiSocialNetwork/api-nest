@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -8,15 +7,21 @@ describe('AppController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [],
     }).compile();
 
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('public', () => {
+    it('should return "Public route"', () => {
+      expect(appController.public()).toBe('Public route');
+    });
+  });
+
+  describe('new', () => {
+    it('should return "Hello you re log"', () => {
+      expect(appController.newUrl()).toBe(`Hello you're log`);
     });
   });
 });

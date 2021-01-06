@@ -1,17 +1,22 @@
 import { Module } from '@nestjs/common';
 import { KeycloakConnectModule, ResourceGuard, RoleGuard, AuthGuard } from 'nest-keycloak-connect';
+import { ConfigService } from '../config/config.service';
 import { APP_GUARD } from '@nestjs/core';
+
+let configService = new ConfigService();
+
+let options = {
+  authServerUrl: configService.get('KEYCLOAK_HOST'),
+  realm: configService.get('KEYCLOAK_REALM'),
+  clientId: configService.get('KEYCLOAK_CLIENT_ID'),
+  secret: configService.get('KEYCLOAK_CLIENT_SECRET'),
+  // optional if you want to retrieve JWT from cookie
+  // cookieKey: 'KEYCLOAK_JWT',
+}
 
 @Module({
   imports: [
-    KeycloakConnectModule.register({
-      authServerUrl: 'http://localhost:8080/auth',
-      realm: 'posthoop',
-      clientId: 'myclient',
-      secret: 'f9cc46c8-8be3-414f-b77d-163a7d24bfe0',
-      // optional if you want to retrieve JWT from cookie
-      // cookieKey: 'KEYCLOAK_JWT',
-    }),
+    KeycloakConnectModule.register(options),
   ],
   providers: [
     // This adds a global level authentication guard, you can also have it scoped
