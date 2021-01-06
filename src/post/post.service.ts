@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InsertResult, Repository } from "typeorm";
 import { Post } from '../entities/Post';
 
 @Injectable()
@@ -24,5 +24,9 @@ export class PostService {
         uidUser: id
       }
     });
+  }
+
+  createPost(post: Post): Promise<InsertResult> {
+    return this.postRepository.insert(post);
   }
 }
