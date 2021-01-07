@@ -1,48 +1,68 @@
-import { Controller, Get, Post as HTTP_Post, Param, Body, HttpException, HttpStatus, HttpCode } from "@nestjs/common";
-import { Resource, Roles, Scopes, AllowAnyRole, Unprotected, Public } from 'nest-keycloak-connect';
-import { ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
-
-const validateUUID = require('uuid-validate');
-const R = require('ramda');
-
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post as HTTP_Post } from "@nestjs/common";
+import { Roles } from "nest-keycloak-connect";
+import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 // Services
-import { PostService } from './post.service';
+import { PostService } from "./post.service";
+import { CommentService } from "../comment/comment.service";
 
 // Entities
-import { Post } from '../entities/Post';
-import { User } from "../entities/User";
+import { Post } from "../entities/Post";
 import { InsertResult } from "typeorm";
 
-@ApiTags('post')
-@Controller('post')
-export class PostController {
-  constructor(private readonly postService: PostService) {}
+const validateUUID = require("uuid-validate");
+const R = require("ramda");
 
-  @Get()
-  @Roles('myclient:USER')
-  findAll(): Promise<Post[]> {
-      return this.postService.findAll();
+@ApiTags("post")
+@Controller("post")
+export class PostController {
+  constructor(private readonly postService: PostService, private readonly commentService: CommentService) {
   }
 
-  @Get('/:uid')
-  @Roles('myclient:USER')
+  @Get()
+  @Roles("myclient:USER")
+  findAll(): Promise<Post[]> {
+    return this.postService.findAll();
+  }
+
+  @Get("/:uid")
+  @Roles("myclient:USER")
   @ApiParam({
     name: "uid",
     description: "uuid of the post",
     type: String,
     required: true
   })
-  findOne(@Param('uid') uid: string): Promise<Post> {
+  findOne(@Param("uid") uid: string): Promise<Post> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.postService.findOne(uid),
-      () => { throw new HttpException('Incorrect uuid format', HttpStatus.BAD_REQUEST) }
-    )
-    return validate()
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
   }
 
-  @HTTP_Post('')
-  @Roles('myclient:USER')
+  @Get("/:uid/comment")
+  @Roles("myclient:USER")
+  @ApiParam({
+    name: "uid",
+    type: String,
+    required: true
+  })
+  findAllCommentByUserUid(@Param("uid") uid): Promise<Post[]> {
+    let validate = R.ifElse(
+      () => validateUUID(uid),
+      () => this.commentService.findAllCommentByPostUid(uid),
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
+  }
+
+  @HTTP_Post("")
+  @Roles("myclient:USER")
   @ApiParam({
     name: "post",
     description: "new post",
@@ -60,12 +80,14 @@ export class PostController {
       }
     }
   })
-  newPost(@Body() newPost: Post): Promise<InsertResult>{
+  newPost(@Body() newPost: Post): Promise<InsertResult> {
     let validate = R.ifElse(
       () => validateUUID(newPost.uidUser.uid),
       () => this.postService.createPost(newPost),
-      () => { throw new HttpException('Incorrect uuid format', HttpStatus.BAD_REQUEST) }
-    )
-    return validate()
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
   }
 }

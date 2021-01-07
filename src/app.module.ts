@@ -8,6 +8,7 @@ import { KeycloakModule } from './auth/keycloak.module';
 import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PostModule } from './post/post.module';
     KeycloakModule,
     UserModule,
     PostModule,
+    CommentModule,
   ],
   controllers: [AppController],
 })

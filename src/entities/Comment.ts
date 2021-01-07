@@ -1,17 +1,10 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Post } from "./Post";
 import { User } from "./User";
-import { Comment } from "./Comment";
 
-@Index("post_pkey", ["uid"], { unique: true })
-@Entity("post", { schema: "posthoop" })
-export class Post {
+@Index("comment_pkey", ["uid"], { unique: true })
+@Entity("comment", { schema: "posthoop" })
+export class Comment {
   @Column("uuid", {
     primary: true,
     name: "uid",
@@ -32,17 +25,11 @@ export class Post {
   })
   createdAt: Date | null;
 
-  @Column("timestamp without time zone", {
-    name: "updated_at",
-    nullable: true,
-    default: () => "now()",
-  })
-  updatedAt: Date | null;
+  @ManyToOne(() => Post, (post) => post.comments)
+  @JoinColumn([{ name: "uid_post", referencedColumnName: "uid" }])
+  uidPost: Post;
 
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.comments)
   @JoinColumn([{ name: "uid_user", referencedColumnName: "uid" }])
   uidUser: User;
-
-  @OneToMany(() => Comment, (comment) => comment.uidPost)
-  comments: Comment[];
 }

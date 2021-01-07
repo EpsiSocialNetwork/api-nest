@@ -1,5 +1,6 @@
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { Post } from "./Post";
+import { Comment } from "./Comment";
 
 @Index("user_email_key", ["email"], { unique: true })
 @Index("user_pkey", ["uid"], { unique: true })
@@ -42,4 +43,7 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.uidUser)
   posts: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.uidUser)
+  comments: Comment[];
 }
