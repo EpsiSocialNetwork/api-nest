@@ -54,19 +54,17 @@ export class CommentController {
     schema: {
       type: "Comment",
       example: {
-        "uidUser": {
-          "uid": "ac6d8b12-44e2-4344-8f14-57b105102757"
-        },
+        "uidUser": "ac6d8b12-44e2-4344-8f14-57b105102757",
         "uidPost": {
-          "uid": "9bf1a5e8-bc37-41a0-ada9-b377a44b5a2d"
+          "uid": "8ec9ead3-3afc-476c-967a-63f7767de9b7"
         },
-        "text": "New Comment"
+        "text": "New Comment for a Post"
       }
     }
   })
   newComment(@Body() newComment: Comment): Promise<InsertResult> {
     let validate = R.ifElse(
-      () => validateUUID(newComment.uidUser.uid),
+      () => validateUUID(newComment.uidUser),
       () => this.commentService.createComment(newComment),
       () => {
         throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);

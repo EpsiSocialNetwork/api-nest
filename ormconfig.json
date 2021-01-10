@@ -5,8 +5,8 @@
   "port": 5432,
   "username": "postgres",
   "password": "postgres",
-  "database": "posthoop",
-  "schema": "posthoop",
+  "database": "posthoop_post",
+  "schema": "posthoop_post",
   "connectTimeoutMS": 2500,
   "entities": ["src/entities/*.ts"],
   "synchronize": false

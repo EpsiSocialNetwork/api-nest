@@ -2,15 +2,15 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   OneToMany,
 } from "typeorm";
-import { User } from "./User";
 import { Comment } from "./Comment";
+import { Tag } from "./Tag";
 
 @Index("post_pkey", ["uid"], { unique: true })
-@Entity("post", { schema: "posthoop" })
+@Entity("post", { schema: "posthoop_post" })
 export class Post {
   @Column("uuid", {
     primary: true,
@@ -22,6 +22,9 @@ export class Post {
   @Column("character varying", { name: "text" })
   text: string;
 
+  @Column("uuid", { name: "uid_user" })
+  uidUser: string;
+
   @Column("uuid", { name: "url_image", nullable: true, array: true })
   urlImage: string[] | null;
 
@@ -32,17 +35,18 @@ export class Post {
   })
   createdAt: Date | null;
 
-  @Column("timestamp without time zone", {
-    name: "updated_at",
-    nullable: true,
-    default: () => "now()",
-  })
+  @Column("timestamp without time zone", { name: "updated_at", nullable: true })
   updatedAt: Date | null;
-
-  @ManyToOne(() => User, (user) => user.posts)
-  @JoinColumn([{ name: "uid_user", referencedColumnName: "uid" }])
-  uidUser: User;
 
   @OneToMany(() => Comment, (comment) => comment.uidPost)
   comments: Comment[];
+
+  @ManyToMany(() => Tag, (tag) => tag.posts)
+  @JoinTable({
+    name: "tag_post",
+    joinColumns: [{ name: "uid_post", referencedColumnName: "uid" }],
+    inverseJoinColumns: [{ name: "uid_tag", referencedColumnName: "uid" }],
+    schema: "posthoop_post",
+  })
+  tags: Tag[];
 }

@@ -1,9 +1,8 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Post } from "./Post";
-import { User } from "./User";
 
 @Index("comment_pkey", ["uid"], { unique: true })
-@Entity("comment", { schema: "posthoop" })
+@Entity("comment", { schema: "posthoop_post" })
 export class Comment {
   @Column("uuid", {
     primary: true,
@@ -14,6 +13,9 @@ export class Comment {
 
   @Column("character varying", { name: "text" })
   text: string;
+
+  @Column("uuid", { name: "uid_user" })
+  uidUser: string;
 
   @Column("uuid", { name: "url_image", nullable: true, array: true })
   urlImage: string[] | null;
@@ -28,8 +30,4 @@ export class Comment {
   @ManyToOne(() => Post, (post) => post.comments)
   @JoinColumn([{ name: "uid_post", referencedColumnName: "uid" }])
   uidPost: Post;
-
-  @ManyToOne(() => User, (user) => user.comments)
-  @JoinColumn([{ name: "uid_user", referencedColumnName: "uid" }])
-  uidUser: User;
 }

@@ -9,8 +9,8 @@ async function bootstrap() {
     .setTitle('HoopPost')
     .setDescription('The HoopPost API description')
     .setVersion('0.9')
-    .addTag('user')
     .addTag('post')
+    .addTag('comment')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);

@@ -50,7 +50,7 @@ export class PostController {
     type: String,
     required: true
   })
-  findAllCommentByUserUid(@Param("uid") uid): Promise<Post[]> {
+  findAllCommentByPostUid(@Param("uid") uid): Promise<Post[]> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.commentService.findAllCommentByPostUid(uid),
@@ -73,16 +73,14 @@ export class PostController {
     schema: {
       type: "Post",
       example: {
-        "uidUser": {
-          "uid": "ac6d8b12-44e2-4344-8f14-57b105102757"
-        },
-        "text": "My new Post text"
+        "uidUser": "ac6d8b12-44e2-4344-8f14-57b105102757",
+        "text": "All it work"
       }
     }
   })
   newPost(@Body() newPost: Post): Promise<InsertResult> {
     let validate = R.ifElse(
-      () => validateUUID(newPost.uidUser.uid),
+      () => validateUUID(newPost.uidUser),
       () => this.postService.createPost(newPost),
       () => {
         throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);

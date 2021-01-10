@@ -19,14 +19,6 @@ export class CommentService {
     return this.commentRepository.findOne(id);
   }
 
-  findAllCommentByUserUid(id: string): Promise<Comment[]> {
-    return this.commentRepository.find({
-      where: {
-        uidUser: id
-      }
-    });
-  }
-
   findAllCommentByPostUid(id: string): Promise<Comment[]> {
     return this.commentRepository.find({
       where: {

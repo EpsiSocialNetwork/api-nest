@@ -6,7 +6,6 @@ import { Connection } from 'typeorm';
 // Modules
 import { KeycloakModule } from './auth/keycloak.module';
 import { AppController } from './app.controller';
-import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 
@@ -19,7 +18,6 @@ import { CommentModule } from './comment/comment.module';
     TypeOrmModule.forRoot(),
     // All routes are controled by Keycloak
     KeycloakModule,
-    UserModule,
     PostModule,
     CommentModule,
   ],
