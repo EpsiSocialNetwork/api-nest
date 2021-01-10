@@ -4,6 +4,7 @@ import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 // Services
 import { PostService } from "./post.service";
 import { CommentService } from "../comment/comment.service";
+import { TagService } from "../tag/tag.service";
 
 // Entities
 import { Post } from "../entities/Post";
@@ -15,7 +16,7 @@ const R = require("ramda");
 @ApiTags("post")
 @Controller("post")
 export class PostController {
-  constructor(private readonly postService: PostService, private readonly commentService: CommentService) {
+  constructor(private readonly postService: PostService, private readonly commentService: CommentService, private readonly tagService: TagService) {
   }
 
   @Get()
@@ -54,6 +55,24 @@ export class PostController {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.commentService.findAllCommentByPostUid(uid),
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
+  }
+
+  @Get("/:uid/tag")
+  @Roles("myclient:USER")
+  @ApiParam({
+    name: "uid",
+    type: String,
+    required: true
+  })
+  findAllTagByPostUid(@Param("uid") uid): Promise<Post[]> {
+    let validate = R.ifElse(
+      () => validateUUID(uid),
+      () => this.tagService.findAllTagByPostUid(uid),
       () => {
         throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
       }
