@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const options = new DocumentBuilder()
-    .setTitle('HoopPost')
-    .setDescription('The HoopPost API description')
+    .setTitle('HoopPost Post')
+    .setDescription('The HoopPost API for Posts, Comments & Tags')
     .setVersion('0.9')
     .addTag('post')
     .addTag('comment')

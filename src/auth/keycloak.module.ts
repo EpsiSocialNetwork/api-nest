@@ -1,22 +1,23 @@
-import { Module } from '@nestjs/common';
-import { KeycloakConnectModule, ResourceGuard, RoleGuard, AuthGuard } from 'nest-keycloak-connect';
-import { ConfigService } from '../config/config.service';
-import { APP_GUARD } from '@nestjs/core';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
-let configService = new ConfigService();
-
-let options = {
-  authServerUrl: configService.get('KEYCLOAK_HOST'),
-  realm: configService.get('KEYCLOAK_REALM'),
-  clientId: configService.get('KEYCLOAK_CLIENT_ID'),
-  secret: configService.get('KEYCLOAK_CLIENT_SECRET'),
-  // optional if you want to retrieve JWT from cookie
-  // cookieKey: 'KEYCLOAK_JWT',
-}
+import { AuthGuard, KeycloakConnectModule, ResourceGuard, RoleGuard } from "nest-keycloak-connect";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
   imports: [
-    KeycloakConnectModule.register(options),
+    ConfigModule.forRoot({
+      envFilePath: ".env",
+      isGlobal: true
+    }),
+    KeycloakConnectModule.register({
+      authServerUrl: process.env.KEYCLOAK_HOST,
+      realm: process.env.KEYCLOAK_REALM,
+      clientId: process.env.KEYCLOAK_CLIENT_ID,
+      secret: process.env.KEYCLOAK_CLIENT_SECRET
+      // optional if you want to retrieve JWT from cookie
+      // cookieKey: 'KEYCLOAK_JWT',
+    })
   ],
   providers: [
     // This adds a global level authentication guard, you can also have it scoped
@@ -26,22 +27,23 @@ let options = {
     // verify the JWT token or Bearer header is missing.
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: AuthGuard
     },
     // This adds a global level resource guard, which is permissive.
     // Only controllers annotated with @Resource and methods with @Scopes
     // are handled by this guard.
     {
       provide: APP_GUARD,
-      useClass: ResourceGuard,
+      useClass: ResourceGuard
     },
     // This adds a global level role guard, which is permissive.
     // Used by `@Roles` decorator with the optional `@AllowAnyRole` decorator for allowing any
     // specified role passed.
     {
       provide: APP_GUARD,
-      useClass: RoleGuard,
-    },
-  ],
+      useClass: RoleGuard
+    }
+  ]
 })
-export class KeycloakModule { }
+export class KeycloakModule {
+}

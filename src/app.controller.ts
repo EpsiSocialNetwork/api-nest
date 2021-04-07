@@ -1,23 +1,25 @@
-import { Controller, Request, Get, Post, UseGuards, Redirect } from '@nestjs/common';
-import { Resource, Roles, Scopes, AllowAnyRole, Public } from 'nest-keycloak-connect';
+import { Controller, Get, Redirect } from "@nestjs/common";
+import { Public } from "nest-keycloak-connect";
 
 @Controller()
 export class AppController {
-  constructor() {}
+  constructor() {
+  }
 
   @Get()
   @Public()
-  @Redirect("https://api.posthoop.julespeguet.fr")
-  redirect(){}
+  home() {
+    return `Welcome to API Post`;
+  }
 
-  @Get('new')
-  newUrl(){
+  @Get("new")
+  newUrl() {
     return `Hello you're log`;
   }
 
-  @Get('public')
+  @Get("public")
   @Public()
-  public(){
+  public() {
     return `Public route`;
   }
 }

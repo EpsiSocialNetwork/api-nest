@@ -3,11 +3,12 @@
   "type": "postgres",
   "host": "localhost",
   "port": 5432,
-  "username": "postgres",
-  "password": "postgres",
+  "username": "posthoop_view",
+  "password": "Epsi2020!",
   "database": "posthoop_post",
-  "schema": "posthoop_post",
+  "schema": "v1_0",
   "connectTimeoutMS": 2500,
-  "entities": ["src/entities/*.ts"],
-  "synchronize": false
+  "entities": ["dist/entities/*{.ts,.js}"],
+  "synchronize": false,
+  "logging": true
 }
