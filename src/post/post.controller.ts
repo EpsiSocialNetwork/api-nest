@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post as HTTP_Post } from "@nestjs/common";
+import { Body, Controller, Get, Delete, HttpException, HttpStatus, Param, Post as HTTP_Post } from "@nestjs/common";
 import { Roles } from "nest-keycloak-connect";
 import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 // Services
@@ -7,8 +7,9 @@ import { CommentService } from "../comment/comment.service";
 import { TagService } from "../tag/tag.service";
 
 // Entities
-import { Post } from "../entities/Post";
+import { PostView } from "../entities/PostView";
 import { InsertResult } from "typeorm";
+import { TagByPostView } from "../entities/TagByPostView";
 
 const validateUUID = require("uuid-validate");
 const R = require("ramda");
@@ -21,7 +22,7 @@ export class PostController {
 
   @Get()
   @Roles("myclient:USER")
-  findAll(): Promise<Post[]> {
+  findAll(): Promise<PostView[]> {
     return this.postService.findAll();
   }
 
@@ -33,7 +34,7 @@ export class PostController {
     type: String,
     required: true
   })
-  findOne(@Param("uid") uid: string): Promise<Post> {
+  findOne(@Param("uid") uid: string): Promise<PostView> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.postService.findOne(uid),
@@ -48,10 +49,11 @@ export class PostController {
   @Roles("myclient:USER")
   @ApiParam({
     name: "uid",
+    description: "uuid of the post",
     type: String,
     required: true
   })
-  findAllCommentByPostUid(@Param("uid") uid): Promise<Post[]> {
+  findAllCommentByPostUid(@Param("uid") uid): Promise<PostView[]> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.commentService.findAllCommentByPostUid(uid),
@@ -66,13 +68,34 @@ export class PostController {
   @Roles("myclient:USER")
   @ApiParam({
     name: "uid",
+    description: "uuid of the post",
     type: String,
     required: true
   })
-  findAllTagByPostUid(@Param("uid") uid): Promise<Post[]> {
+  findAllTagByPostUid(@Param("uid") uid): Promise<TagByPostView[]> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.tagService.findAllTagByPostUid(uid),
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
+  }
+
+  @Get("/timeline/:uid")
+  @Roles("myclient:USER")
+  @ApiParam({
+    name: "uid",
+    description: "uuid of the user",
+    type: String,
+    required: true
+  })
+  findTimelinePostByUserUid(@Param("uid") uid): Promise<PostView[]> {
+    //["ac6d8b12-44e2-4344-8f14-57b105102757", "ac6d8b12-44e2-4344-8f14-57b105102757"]
+    let validate = R.ifElse(
+      () => validateUUID(uid),
+      () => this.postService.findTimelinePostByUserUid([uid]),
       () => {
         throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
       }
@@ -85,7 +108,7 @@ export class PostController {
   @ApiParam({
     name: "post",
     description: "new post",
-    type: Post,
+    type: PostView,
     required: true
   })
   @ApiBody({
@@ -97,7 +120,7 @@ export class PostController {
       }
     }
   })
-  newPost(@Body() newPost: Post): Promise<InsertResult> {
+  newPost(@Body() newPost: PostView): Promise<InsertResult> {
     let validate = R.ifElse(
       () => validateUUID(newPost.uidUser),
       () => this.postService.createPost(newPost),
@@ -107,4 +130,25 @@ export class PostController {
     );
     return validate();
   }
+
+  @Delete("/:uid")
+  @Roles("myclient:USER")
+  @ApiParam({
+    name: "uid",
+    description: "uuid of the post",
+    type: String,
+    required: true
+  })
+  deletePost(@Param("uid") uid: string): Promise<InsertResult> {
+    let validate = R.ifElse(
+      () => validateUUID(uid),
+      () => this.postService.deletePost(uid),
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
+  }
 }
+
+

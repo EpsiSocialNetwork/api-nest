@@ -8,12 +8,13 @@ import { CommentService } from "../comment/comment.service";
 import { TagService } from "../tag/tag.service";
 
 // Entities
-import { Post } from "../entities/Post";
-import { Comment } from "../entities/Comment";
-import { Tag } from "../entities/Tag";
+import { PostView } from "../entities/PostView";
+import { CommentView } from "../entities/CommentView";
+import { TagView } from "../entities/TagView";
+import { TagByPostView } from "../entities/TagByPostView";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post, Comment, Tag])],
+  imports: [TypeOrmModule.forFeature([PostView, CommentView, TagView, TagByPostView])],
   controllers: [PostController],
   providers: [PostService, CommentService, TagService],
   exports: [PostService, TypeOrmModule]
