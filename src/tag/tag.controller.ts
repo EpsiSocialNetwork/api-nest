@@ -5,7 +5,8 @@ import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 import { TagService } from "./tag.service";
 
 // Entities
-import { Tag } from "../entities/Tag";
+import { TagView } from "../entities/TagView";
+import { TagByPostView } from "../entities/TagByPostView";
 import { InsertResult } from "typeorm";
 
 const validateUUID = require("uuid-validate");
@@ -19,7 +20,7 @@ export class TagController {
 
   @Get()
   @Roles("myclient:USER")
-  findAll(): Promise<Tag[]> {
+  findAll(): Promise<TagView[]> {
     return this.tagService.findAll();
   }
 
@@ -31,7 +32,7 @@ export class TagController {
     type: String,
     required: true
   })
-  findOne(@Param("uid") uid: string): Promise<Tag> {
+  findOne(@Param("uid") uid: string): Promise<TagView> {
     let validate = R.ifElse(
       () => validateUUID(uid),
       () => this.tagService.findOne(uid),
@@ -59,7 +60,7 @@ export class TagController {
       }
     }
   })
-  newTag(@Body() newTag: Tag): Promise<InsertResult> {
+  newTag(@Body() newTag: TagView): Promise<InsertResult> {
     return this.tagService.createTag(newTag);
   }
 }

@@ -6,10 +6,11 @@ import { TagController } from "./tag.controller";
 import { TagService } from "./tag.service";
 
 // Entities
-import { Tag } from "../entities/Tag";
+import { TagView } from "../entities/TagView";
+import { TagByPostView } from "../entities/TagByPostView";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tag])],
+  imports: [TypeOrmModule.forFeature([TagView, TagByPostView])],
   controllers: [TagController],
   providers: [TagService],
   exports: [TagService, TypeOrmModule]
