@@ -1,25 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { InsertResult, Repository } from "typeorm";
-import { Comment } from "../entities/Comment";
+import { DeleteResult, InsertResult, Repository } from "typeorm";
+import { CommentView } from "../entities/CommentView";
 
 @Injectable()
 export class CommentService {
   constructor(
-    @InjectRepository(Comment)
-    private commentRepository: Repository<Comment>
+    @InjectRepository(CommentView)
+    private commentRepository: Repository<CommentView>
   ) {
   }
 
-  findAll(): Promise<Comment[]> {
+  findAll(): Promise<CommentView[]> {
     return this.commentRepository.find();
   }
 
-  findOne(id: string): Promise<Comment> {
-    return this.commentRepository.findOne(id);
+  findOne(id: string): Promise<CommentView> {
+    return this.commentRepository.findOne({ where: { uid: id } });
   }
 
-  findAllCommentByPostUid(id: string): Promise<Comment[]> {
+  findAllCommentByPostUid(id: string): Promise<CommentView[]> {
     return this.commentRepository.find({
       where: {
         uidPost: id
@@ -27,7 +27,15 @@ export class CommentService {
     });
   }
 
-  createComment(comment: Comment): Promise<InsertResult> {
+  createComment(comment: CommentView): Promise<InsertResult> {
     return this.commentRepository.insert(comment);
+  }
+
+  deleteComment(id: string): Promise<DeleteResult> {
+    return this.commentRepository.delete({ uid: id });
+  }
+
+  deleteAllCommentByPostUid(id: string): Promise<DeleteResult> {
+    return this.commentRepository.delete({ uidPost: id });
   }
 }

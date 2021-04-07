@@ -1,11 +1,11 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
 import { Roles } from "nest-keycloak-connect";
 import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 // Services
 import { CommentService } from "./comment.service";
 
 // Entities
-import { Comment } from "../entities/Comment";
+import { CommentView } from "../entities/CommentView";
 import { InsertResult } from "typeorm";
 
 const validateUUID = require("uuid-validate");
@@ -19,7 +19,7 @@ export class CommentController {
 
   @Get()
   @Roles("myclient:USER")
-  findAll(): Promise<Comment[]> {
+  findAll(): Promise<CommentView[]> {
     return this.commentService.findAll();
   }
 
@@ -47,7 +47,7 @@ export class CommentController {
   @ApiParam({
     name: "comment",
     description: "new comment",
-    type: Comment,
+    type: CommentView,
     required: true
   })
   @ApiBody({
@@ -62,10 +62,29 @@ export class CommentController {
       }
     }
   })
-  newComment(@Body() newComment: Comment): Promise<InsertResult> {
+  newComment(@Body() newComment: CommentView): Promise<InsertResult> {
     let validate = R.ifElse(
       () => validateUUID(newComment.uidUser),
       () => this.commentService.createComment(newComment),
+      () => {
+        throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
+      }
+    );
+    return validate();
+  }
+
+  @Delete("/:uid")
+  @Roles("myclient:USER")
+  @ApiParam({
+    name: "uid",
+    description: "uuid of the comment",
+    type: String,
+    required: true
+  })
+  deletePost(@Param("uid") uid: string): Promise<InsertResult> {
+    let validate = R.ifElse(
+      () => validateUUID(uid),
+      () => this.commentService.deleteComment(uid),
       () => {
         throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
       }

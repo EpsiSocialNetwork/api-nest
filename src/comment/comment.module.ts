@@ -4,10 +4,10 @@ import { CommentController } from "./comment.controller";
 import { CommentService } from "./comment.service";
 
 // Entities
-import { Comment } from "../entities/Comment";
+import { CommentView } from "../entities/CommentView";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment])],
+  imports: [TypeOrmModule.forFeature([CommentView])],
   controllers: [CommentController],
   providers: [CommentService],
   exports: [CommentService, TypeOrmModule]
