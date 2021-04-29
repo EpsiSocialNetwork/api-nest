@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Delete, HttpException, HttpStatus, Param, Post as HTTP_Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Delete,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post as HTTP_Post,
+  Query
+} from "@nestjs/common";
 import { Roles } from "nest-keycloak-connect";
 import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 // Services
@@ -83,19 +93,34 @@ export class PostController {
     return validate();
   }
 
-  @Get("/timeline/:uid")
+  @Get("/timeline/user")
   @Roles("myclient:USER")
   @ApiParam({
-    name: "uid",
-    description: "uuid of the user",
+    name: "uids",
+    description: "uuids of the users you want to posts",
     type: String,
     required: true
   })
-  findTimelinePostByUserUid(@Param("uid") uid): Promise<PostView[]> {
+  findTimelinePostByUserUid(@Query("uids")uids : string): Promise<PostView[]> {
     //["ac6d8b12-44e2-4344-8f14-57b105102757", "ac6d8b12-44e2-4344-8f14-57b105102757"]
+    let tabs = uids.split(",");
+
+    let validateTabsUID = () => {
+      let isValid = true;
+      tabs.map(
+        uid => {
+          if(!validateUUID(uid))
+          {
+            isValid = false;
+          }
+        }
+      )
+      return isValid;
+    }
+
     let validate = R.ifElse(
-      () => validateUUID(uid),
-      () => this.postService.findTimelinePostByUserUid([uid]),
+      () => validateTabsUID(),
+      () => this.postService.findTimelinePostByUserUid(tabs),
       () => {
         throw new HttpException("Incorrect uuid format", HttpStatus.BAD_REQUEST);
       }
